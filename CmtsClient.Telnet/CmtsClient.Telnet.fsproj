@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <PackageId>KD.CmtsClient.Telnet</PackageId>
+    <Description>Client to more easily handle Telnet communications to the CMTS</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Authors>kdurkin77</Authors>
+    <Product>KD.CmtsClient.Telnet</Product>
+    <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
+    <PackageTags>Telnet;Cmts;</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="ITelnetCmtsClient.fs" />
+    <Compile Include="Operators.fs" />
+    <Compile Include="Extensions.fs" />
+    <Compile Include="TelnetCmtsClient.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KD.Telnet.TcpTelnetClient" Version="1.1.0" />
+    <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
+  </ItemGroup>
+
+</Project>

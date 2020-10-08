@@ -10,8 +10,8 @@
     <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
     <PackageTags>Telnet;Cmts;</PackageTags>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <Version>1.1.0</Version>
+    <PackageReleaseNotes>Updated KD.Telnet.TcpTelnetClient package</PackageReleaseNotes>
+    <Version>1.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KD.Telnet.TcpTelnetClient" Version="1.1.0" />
+    <PackageReference Include="KD.Telnet.TcpTelnetClient" Version="1.1.1" />
     <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
   </ItemGroup>
 

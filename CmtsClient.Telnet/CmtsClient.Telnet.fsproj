@@ -10,13 +10,12 @@
     <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
     <PackageTags>Telnet;Cmts;</PackageTags>
-    <PackageReleaseNotes>Updated KD.Telnet.TcpTelnetClient package</PackageReleaseNotes>
-    <Version>1.1.1</Version>
+    <PackageReleaseNotes>Added the case where a CMTS asks for a username instead of a password. In this case we pass it the first password and use the en password as the password</PackageReleaseNotes>
+    <Version>1.1.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="ITelnetCmtsClient.fs" />
-    <Compile Include="Operators.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="TelnetCmtsClient.fs" />
   </ItemGroup>

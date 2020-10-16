@@ -1,11 +1,18 @@
 ﻿namespace KD.CmtsClient.Telnet
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open KD.Telnet
 open KD.Telnet.TcpTelnetClient
 open System.Threading.Tasks
+open System
 
 type TelnetCmtsClient() = 
+    let (>>=!) (xa : unit -> Task<bool>) ca = fun() ->
+        task {
+            match! xa() with
+            | false -> return false
+            | true -> return! ca()
+        }
+
     let doneBytes: byte[] = [| 0x0Duy; 0x00uy;|]
     let client = new TcpTelnetClient() :> ITcpTelnetClient
 
@@ -37,41 +44,44 @@ type TelnetCmtsClient() =
     interface ITelnetCmtsClient with
         member _.ConnectAsync ip =  client.ConnectAsync ip 23
 
-        member _.Login password enPassword timeout = 
-            let sendPassword() =
+        member _.Login password enPassword timeout =
+            let sendPassword (endsWithString:string) =
                 task {
                     do! client.SendData password
                     do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
-
-                    let! secondResponse = client.ReceiveData(timeout)
-                    return secondResponse.EndsWith(">")
+                    let! response = client.ReceiveData timeout
+                    return response.Trim().EndsWith endsWithString
                     }
 
-            let sendEnable() =
+            let sendEnable (endsWithString: string) =
                 task {
                     do! client.SendDataReceiveEcho("en", timeout)  |> Task.Ignore
                     do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
-
-                    let! thirdResponse = client.ReceiveData(timeout)
-                    return thirdResponse.Contains("Password")
+                    let! response = client.ReceiveData timeout
+                    return response.Trim().EndsWith endsWithString
                 }
 
-            let sendEnablePassword() =
+            let sendEnablePassword (endsWithString: string) =
                 task {
                     do! client.SendData enPassword
                     do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
-                
-                    let! forthResponse = client.ReceiveData(timeout)
-                    return forthResponse.EndsWith("#")
+                    let! response = client.ReceiveData timeout
+                    return response.Trim().EndsWith endsWithString
                 }
 
             task {
-                let! firstResponse = client.ReceiveData(timeout)
-                if not (firstResponse.Contains("Password")) then
-                    return firstResponse.EndsWith("#")
-                else
-                    let taskChain = sendPassword >>=! sendEnable >>=! sendEnablePassword
+                let! firstResponse = client.ReceiveData timeout
+                let firstResponseTrimmed = firstResponse.Trim()
+                if firstResponseTrimmed.EndsWith("#") then
+                    return true
+                else if firstResponseTrimmed.EndsWith("Password:") then
+                    let taskChain = (fun () -> sendPassword ">" ) >>=! (fun () -> sendEnable "Password:") >>=! (fun () -> sendEnablePassword "#")
                     return! taskChain()
+                else if (firstResponseTrimmed.EndsWith("Username:")) then
+                    let taskChain = (fun () -> sendPassword "Password:") >>=! (fun () -> sendEnablePassword "#")
+                    return! taskChain()
+                else 
+                    return false
                 }
 
         member _.ClearDuplicatesIpV4 timeout = ClearDuplicatesIpV4 timeout

@@ -12,6 +12,7 @@ namespace Test
             //values needed to communicate to the CMTS
             var ip = IPAddress.Parse("");
             var timeout = TimeSpan.FromSeconds(5.0);
+            var username = "";
             var password = "";
             var enablePassword = "";
 
@@ -24,7 +25,7 @@ namespace Test
                 //connect
                 await cmtsClient.ConnectAsync(ip);
                 //log into the cmts, some require a password and then to be enabled with a password
-                var isLoggedIn = await cmtsClient.Login(password, enablePassword, timeout).ConfigureAwait(false);
+                var isLoggedIn = await cmtsClient.Login(username, password, enablePassword, timeout).ConfigureAwait(false);
                 if (!isLoggedIn)
                 {
                     throw new Exception("Could Not Login");

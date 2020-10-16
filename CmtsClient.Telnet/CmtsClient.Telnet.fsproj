@@ -10,8 +10,8 @@
     <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
     <PackageTags>Telnet;Cmts;</PackageTags>
-    <PackageReleaseNotes>Added the case where a CMTS asks for a username instead of a password. In this case we pass it the first password and use the en password as the password</PackageReleaseNotes>
-    <Version>1.1.2</Version>
+    <PackageReleaseNotes>Updated to handle username better, as well as handle "bad password" and be more generic. Updated with the new information that when the end of the response is ">" we need to enable and when it's "#" we're fully logged in</PackageReleaseNotes>
+    <Version>1.1.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

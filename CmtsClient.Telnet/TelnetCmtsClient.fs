@@ -3,16 +3,8 @@
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open KD.Telnet.TcpTelnetClient
 open System.Threading.Tasks
-open System
 
 type TelnetCmtsClient() = 
-    let (>>=!) (xa : unit -> Task<bool>) ca = fun() ->
-        task {
-            match! xa() with
-            | false -> return false
-            | true -> return! ca()
-        }
-
     let doneBytes: byte[] = [| 0x0Duy; 0x00uy;|]
     let client = new TcpTelnetClient() :> ITcpTelnetClient
 
@@ -44,45 +36,56 @@ type TelnetCmtsClient() =
     interface ITelnetCmtsClient with
         member _.ConnectAsync ip =  client.ConnectAsync ip 23
 
-        member _.Login password enPassword timeout =
-            let sendPassword (endsWithString:string) =
-                task {
-                    do! client.SendData password
-                    do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
-                    let! response = client.ReceiveData timeout
-                    return response.Trim().EndsWith endsWithString
-                    }
+        member _.Login username password enPassword timeout =
 
-            let sendEnable (endsWithString: string) =
-                task {
-                    do! client.SendDataReceiveEcho("en", timeout)  |> Task.Ignore
-                    do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
-                    let! response = client.ReceiveData timeout
-                    return response.Trim().EndsWith endsWithString
-                }
+            let await t = Async.AwaitTask t
+            let awaitTask (t: Task) = Async.AwaitTask t
 
-            let sendEnablePassword (endsWithString: string) =
-                task {
-                    do! client.SendData enPassword
-                    do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
-                    let! response = client.ReceiveData timeout
-                    return response.Trim().EndsWith endsWithString
-                }
+            let (|EndsWith|_|) (ends: string) (str: string) =
+                if str.EndsWith(ends) 
+                then Some()
+                else None
+
+            let (|Contains|_|) (contains: string) (str: string) =
+                if str.Contains(contains)
+                then Some()
+                else None
 
             task {
-                let! firstResponse = client.ReceiveData timeout
-                let firstResponseTrimmed = firstResponse.Trim()
-                if firstResponseTrimmed.EndsWith("#") then
-                    return true
-                else if firstResponseTrimmed.EndsWith("Password:") then
-                    let taskChain = (fun () -> sendPassword ">" ) >>=! (fun () -> sendEnable "Password:") >>=! (fun () -> sendEnablePassword "#")
-                    return! taskChain()
-                else if (firstResponseTrimmed.EndsWith("Username:")) then
-                    let taskChain = (fun () -> sendPassword "Password:") >>=! (fun () -> sendEnablePassword "#")
-                    return! taskChain()
-                else 
-                    return false
+                let rec handleLogin (response: string) = async {
+                    match response.Trim() with
+                    | EndsWith "#"              ->
+                        return true
+                    | Contains "Bad passwords"  ->
+                        return false
+                    | EndsWith ">"              ->
+                        do! await <| client.SendDataReceiveEcho("en", timeout) |> Async.Ignore
+                        do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
+                        let! nextResponse = await <| client.ReceiveData timeout
+                        if not (nextResponse.Trim().EndsWith("Password:")) then
+                            return false
+                        else
+                            do! awaitTask <| client.SendData enPassword
+                            do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
+                            let! nextResponse = await <| client.ReceiveData timeout
+                            return! handleLogin nextResponse
+                    | EndsWith "Username:"      ->
+                        do! await <| client.SendDataReceiveEcho (username, timeout) |> Async.Ignore
+                        do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
+                        let! nextResponse = await <| client.ReceiveData timeout
+                        return! handleLogin nextResponse
+                    | EndsWith "Password:"      ->
+                        do! awaitTask <| client.SendData password
+                        do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
+                        let! nextResponse = await <| client.ReceiveData timeout
+                        return! handleLogin nextResponse
+                    | _                         ->
+                        return false
                 }
+
+                let! firstResponse = client.ReceiveData timeout
+                return! handleLogin firstResponse
+            }
 
         member _.ClearDuplicatesIpV4 timeout = ClearDuplicatesIpV4 timeout
 

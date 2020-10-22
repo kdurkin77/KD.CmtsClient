@@ -36,6 +36,8 @@ type TelnetCmtsClient() =
     interface ITelnetCmtsClient with
         member _.ConnectAsync ip =  client.ConnectAsync ip 23
 
+        member _.IsConnected() = client.IsConnected()
+
         member _.Login username password enPassword timeout =
 
             let await t = Async.AwaitTask t

@@ -10,8 +10,11 @@
     <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
     <PackageTags>Telnet;Cmts;</PackageTags>
-    <PackageReleaseNotes>Added a function to check if the connection is alive</PackageReleaseNotes>
-    <Version>1.1.4</Version>
+    <PackageReleaseNotes>
+      ***BREAKING CHANGES*** Taking in the IP of the cmts in the constructor instead of at the connect
+      Added a function to send a message with the "done bytes" in order to keep the connection alive
+    </PackageReleaseNotes>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

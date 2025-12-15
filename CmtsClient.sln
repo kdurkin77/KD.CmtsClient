@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CmtsClient.Telnet", "CmtsClient.Telnet\CmtsClient.Telnet.fsproj", "{2AEE436B-E43B-44F5-BA42-1D24CCEF0CF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{48118FDC-3FFF-4CC7-B9BF-DCB03B61D7B8}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CmtsClient", "CmtsClient\CmtsClient.fsproj", "{71876832-03EF-4D99-BA30-26D370BBB64D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CmtsClient.Ssh", "CmtsClient.Ssh\CmtsClient.Ssh.fsproj", "{E340C879-8143-43EF-87D9-AAB61E323B07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{48118FDC-3FFF-4CC7-B9BF-DCB03B61D7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48118FDC-3FFF-4CC7-B9BF-DCB03B61D7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48118FDC-3FFF-4CC7-B9BF-DCB03B61D7B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71876832-03EF-4D99-BA30-26D370BBB64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71876832-03EF-4D99-BA30-26D370BBB64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71876832-03EF-4D99-BA30-26D370BBB64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71876832-03EF-4D99-BA30-26D370BBB64D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E340C879-8143-43EF-87D9-AAB61E323B07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E340C879-8143-43EF-87D9-AAB61E323B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E340C879-8143-43EF-87D9-AAB61E323B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E340C879-8143-43EF-87D9-AAB61E323B07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net8.0;netstandard2.1;netstandard2.0;</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarnOn>3388;3389;3390</WarnOn>
+    <PackageId>KD.CmtsClient</PackageId>
+    <Description>Interface definition for a CmtsClient</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Authors>kdurkin77</Authors>
+    <Product>KD.CmtsClient</Product>
+    <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
+    <PackageTags>Cmts;</PackageTags>
+    <PackageReleaseNotes>
+      Initial Release
+    </PackageReleaseNotes>
+    <Version>10.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="ICmtsClient.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

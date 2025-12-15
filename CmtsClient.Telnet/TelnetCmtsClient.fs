@@ -1,8 +1,11 @@
 ﻿namespace KD.CmtsClient.Telnet
 
-open KD.Telnet.TcpTelnetClient
-open System.Threading.Tasks
 open System.Net
+open System.Threading.Tasks
+
+open KD.CmtsClient
+open KD.Telnet.TcpTelnetClient
+
 
 type TelnetCmtsClient(ip: IPAddress) = 
     let doneBytes: byte[] = [| 0x0Duy; 0x00uy;|]
@@ -33,16 +36,14 @@ type TelnetCmtsClient(ip: IPAddress) =
             return response.EndsWith("#")
             }
 
-    interface ITelnetCmtsClient with
-        member _.ConnectAsync () =
-            client.ConnectAsync ip 23
+    interface ICmtsClient with
 
         member _.IsConnected() = client.IsConnected()
 
         member _.SendKeepAlive timeout =
             client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
 
-        member _.Login username password enPassword timeout =
+        member _.ConnectAndLogin username password enPassword timeout =
 
             let await t = Async.AwaitTask t
             let awaitTask (t: Task) = Async.AwaitTask t
@@ -89,6 +90,7 @@ type TelnetCmtsClient(ip: IPAddress) =
             }
 
             task {
+                do! client.ConnectAsync ip 23
                 let! firstResponse = client.ReceiveData timeout
                 return! handleLogin firstResponse
             }
@@ -97,7 +99,7 @@ type TelnetCmtsClient(ip: IPAddress) =
 
         member __.ClearDuplicatesIpV6 timeout = ClearDuplicatesIpV6 timeout
             
-        member _.ClearDuplicates isIpv6 timeout = 
+        member _.ClearDuplicates isIpv6 timeout =
             if (isIpv6) then
                 ClearDuplicatesIpV6 timeout
             else
@@ -117,5 +119,5 @@ type TelnetCmtsClient(ip: IPAddress) =
             return! client.ReceiveData(timeout)
             }
 
-        member __.Dispose() = 
+        member __.Dispose() =
             client.Dispose()

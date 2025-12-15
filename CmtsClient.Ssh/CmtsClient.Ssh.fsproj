@@ -4,25 +4,22 @@
     <TargetFrameworks>net10.0;net8.0;netstandard2.1;netstandard2.0;</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarnOn>3388;3389;3390</WarnOn>
-    <PackageId>KD.CmtsClient.Telnet</PackageId>
-    <Description>Client to more easily handle Telnet communications to the CMTS</Description>
+    <PackageId>KD.CmtsClient.Ssh</PackageId>
+    <Description>Client to more easily handle SSH communications to the CMTS</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>kdurkin77</Authors>
-    <Product>KD.CmtsClient.Telnet</Product>
+    <Product>KD.CmtsClient.Ssh</Product>
     <RepositoryUrl>https://github.com/kdurkin77/KD.CmtsClient</RepositoryUrl>
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
-    <PackageTags>Telnet;Cmts;</PackageTags>
+    <PackageTags>Ssh;Cmts;</PackageTags>
     <PackageReleaseNotes>
-      ***BREAKING CHANGES***
-      Renamed ITelnetCmtsClient to ICmtsClient and moved it into it's own project and package
-      Took out the ConnectAsync and Login functions and combined them into one ConnectAndLogin function
+      Initial Release
     </PackageReleaseNotes>
     <Version>10.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Extensions.fs" />
-    <Compile Include="TelnetCmtsClient.fs" />
+    <Compile Include="SshCmtsClient.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,12 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KD.Telnet.TcpTelnetClient" Version="1.3.0" />
+    <PackageReference Include="SSH.NET" Version="2025.1.0" />
     <PackageReference Include="KD.CmtsClient" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="10.0.101" />
   </ItemGroup>
-	
+
 </Project>

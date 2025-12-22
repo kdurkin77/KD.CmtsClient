@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KD.CmtsClient.Ssh" Version="10.0.0" />
-    <PackageReference Include="KD.CmtsClient.Telnet" Version="10.0.0" />
+    <PackageReference Include="KD.CmtsClient.Ssh" Version="10.0.1" />
+    <PackageReference Include="KD.CmtsClient.Telnet" Version="10.0.1" />
   </ItemGroup>
 
 </Project>

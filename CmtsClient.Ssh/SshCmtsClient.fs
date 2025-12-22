@@ -1,5 +1,6 @@
 ﻿namespace KD.CmtsClient.Ssh
 
+open System
 open System.Net
 open System.Threading
 open System.Threading.Tasks
@@ -39,10 +40,20 @@ type SshCmtsClient(ip: IPAddress) =
         member _.IsConnected() = client.IsConnected
 
         member _.SendKeepAlive timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             use cts = new CancellationTokenSource(timeout)
-            executeCommand "" cts.Token :> Task
+            executeCommand String.Empty cts.Token :> Task
 
         member _.ConnectAndLogin username password _ timeout =
+            if String.IsNullOrWhiteSpace username then
+                raise (ArgumentNullException(nameof username))
+            if String.IsNullOrWhiteSpace password then
+                raise (ArgumentNullException(nameof password))
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             task {
                 client <- new SshClient(ip.ToString(), username, password)
                 use cts = new CancellationTokenSource(timeout)
@@ -51,26 +62,49 @@ type SshCmtsClient(ip: IPAddress) =
             }
 
         member _.ClearDuplicatesIpV4 timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             use cts = new CancellationTokenSource(timeout)
             ClearDuplicatesIpV4 cts.Token
 
         member _.ClearDuplicatesIpV6 timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             use cts = new CancellationTokenSource(timeout)
             ClearDuplicatesIpV6 cts.Token
-            
+
         member _.ClearDuplicates isIpv6 timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             use cts = new CancellationTokenSource(timeout)
             if isIpv6 then
                 ClearDuplicatesIpV6 cts.Token
             else
                 ClearDuplicatesIpV4 cts.Token
 
-        member _.ShowCableModem mac timeout =
+        //arg could be a mac to get specifically the info for that mac or empty to get all the ipv4 info or ipv6 to see all the ipv6 info
+        member _.ShowCableModem arg timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             use cts = new CancellationTokenSource(timeout)
-            executeCommand (sprintf "scm %s" mac) cts.Token
+            let command =
+                if String.IsNullOrWhiteSpace arg then
+                    "scm"
+                else
+                    $"scm {arg}"
+            executeCommand command cts.Token
 
         member _.ShowLogging mac timeout =
+            if String.IsNullOrWhiteSpace mac then
+                raise (ArgumentNullException(nameof mac))
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             use cts = new CancellationTokenSource(timeout)
-            executeCommand (sprintf "sh logging | i %s" mac) cts.Token
+            executeCommand ($"sh logging | i {mac}") cts.Token
 
         member _.Dispose() = client.Dispose()

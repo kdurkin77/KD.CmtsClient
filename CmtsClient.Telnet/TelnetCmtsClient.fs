@@ -1,5 +1,6 @@
 ﻿namespace KD.CmtsClient.Telnet
 
+open System
 open System.Net
 open System.Threading.Tasks
 
@@ -37,13 +38,21 @@ type TelnetCmtsClient(ip: IPAddress) =
             }
 
     interface ICmtsClient with
-
         member _.IsConnected() = client.IsConnected()
 
         member _.SendKeepAlive timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
 
         member _.ConnectAndLogin username password enPassword timeout =
+            if String.IsNullOrWhiteSpace username then
+                raise (ArgumentNullException(nameof username))
+            if String.IsNullOrWhiteSpace password then
+                raise (ArgumentNullException(nameof password))
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
 
             let await t = Async.AwaitTask t
             let awaitTask (t: Task) = Async.AwaitTask t
@@ -95,25 +104,50 @@ type TelnetCmtsClient(ip: IPAddress) =
                 return! handleLogin firstResponse
             }
 
-        member _.ClearDuplicatesIpV4 timeout = ClearDuplicatesIpV4 timeout
+        member _.ClearDuplicatesIpV4 timeout = 
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
 
-        member __.ClearDuplicatesIpV6 timeout = ClearDuplicatesIpV6 timeout
-            
+            ClearDuplicatesIpV4 timeout
+
+        member __.ClearDuplicatesIpV6 timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
+            ClearDuplicatesIpV6 timeout
+
         member _.ClearDuplicates isIpv6 timeout =
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
             if (isIpv6) then
                 ClearDuplicatesIpV6 timeout
             else
                 ClearDuplicatesIpV4 timeout
 
-        member _.ShowCableModem mac timeout = task {
-            do! client.SendDataReceiveEcho((sprintf "scm %s" mac), timeout) |> Task.Ignore
+        //arg could be a mac to get specifically the info for that mac or empty to get all the ipv4 info or ipv6 to see all the ipv6 info
+        member _.ShowCableModem arg timeout = task {
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
+            let command =
+                if String.IsNullOrWhiteSpace arg then
+                    "scm"
+                else
+                    $"scm {arg}"
+            do! client.SendDataReceiveEcho(command, timeout) |> Task.Ignore
             do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
 
             return! client.ReceiveData(timeout)
             }
 
         member _.ShowLogging mac timeout = task {
-            do! client.SendDataReceiveEcho((sprintf "sh logging | i %s" mac), timeout) |> Task.Ignore
+            if String.IsNullOrWhiteSpace mac then
+                raise (ArgumentNullException(nameof mac))
+            if timeout < TimeSpan.Zero then
+                raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
+
+            do! client.SendDataReceiveEcho($"sh logging | i {mac}", timeout) |> Task.Ignore
             do! client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
 
             return! client.ReceiveData(timeout)

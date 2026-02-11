@@ -13,9 +13,10 @@
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
     <PackageTags>Ssh;Cmts;</PackageTags>
     <PackageReleaseNotes>
+      Added ability to use a different port
       Added argument validation - ShowCableModem takes in an optional arg that will be used if it's not a null, empty, or whitespace string
     </PackageReleaseNotes>
-    <Version>10.0.1</Version>
+    <Version>10.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

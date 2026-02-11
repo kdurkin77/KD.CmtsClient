@@ -10,7 +10,8 @@ open Renci.SshNet
 open KD.CmtsClient
 
 
-type SshCmtsClient(ip: IPAddress) = 
+type SshCmtsClient(ip: IPAddress, port: int) =
+
     let mutable client = new SshClient(ip.ToString(), "admin")
 
     let executeCommand command ct =
@@ -36,6 +37,8 @@ type SshCmtsClient(ip: IPAddress) =
             return response.EndsWith("#")
         }
 
+    new(ip: IPAddress) = new SshCmtsClient(ip, 22)
+
     interface ICmtsClient with
         member _.IsConnected() = client.IsConnected
 
@@ -55,7 +58,7 @@ type SshCmtsClient(ip: IPAddress) =
                 raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
 
             task {
-                client <- new SshClient(ip.ToString(), username, password)
+                client <- new SshClient(ip.ToString(), port, username, password)
                 use cts = new CancellationTokenSource(timeout)
                 do! client.ConnectAsync(cts.Token)
                 return true

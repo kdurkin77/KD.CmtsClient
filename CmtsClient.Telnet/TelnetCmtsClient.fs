@@ -8,7 +8,8 @@ open KD.CmtsClient
 open KD.Telnet.TcpTelnetClient
 
 
-type TelnetCmtsClient(ip: IPAddress) = 
+type TelnetCmtsClient(ip: IPAddress, port: int) =
+
     let doneBytes: byte[] = [| 0x0Duy; 0x00uy;|]
     let client = new TcpTelnetClient() :> ITcpTelnetClient
 
@@ -37,6 +38,8 @@ type TelnetCmtsClient(ip: IPAddress) =
             return response.EndsWith("#")
             }
 
+    new(ip: IPAddress) = new TelnetCmtsClient(ip, 23)
+
     interface ICmtsClient with
         member _.IsConnected() = client.IsConnected()
 
@@ -47,10 +50,6 @@ type TelnetCmtsClient(ip: IPAddress) =
             client.SendDataReceiveEcho(doneBytes, timeout) |> Task.Ignore
 
         member _.ConnectAndLogin username password enPassword timeout =
-            if String.IsNullOrWhiteSpace username then
-                raise (ArgumentNullException(nameof username))
-            if String.IsNullOrWhiteSpace password then
-                raise (ArgumentNullException(nameof password))
             if timeout < TimeSpan.Zero then
                 raise (ArgumentOutOfRangeException(nameof(timeout), $"{nameof timeout} must be greater than or equal to 0"))
 
@@ -80,16 +79,22 @@ type TelnetCmtsClient(ip: IPAddress) =
                     if not (nextResponse.Trim().EndsWith("Password:")) then
                         return false
                     else
+                        if String.IsNullOrWhiteSpace enPassword then
+                            raise (ArgumentNullException(nameof enPassword))
                         do! awaitTask <| client.SendData enPassword
                         do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
                         let! nextResponse = await <| client.ReceiveData timeout
                         return! handleLogin nextResponse
                 | EndsWith "Username:"      ->
+                    if String.IsNullOrWhiteSpace username then
+                        raise (ArgumentNullException(nameof username))
                     do! await <| client.SendDataReceiveEcho (username, timeout) |> Async.Ignore
                     do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
                     let! nextResponse = await <| client.ReceiveData timeout
                     return! handleLogin nextResponse
                 | EndsWith "Password:"      ->
+                    if String.IsNullOrWhiteSpace password then
+                        raise (ArgumentNullException(nameof password))
                     do! awaitTask <| client.SendData password
                     do! await <| client.SendDataReceiveEcho(doneBytes, timeout) |> Async.Ignore
                     let! nextResponse = await <| client.ReceiveData timeout
@@ -99,7 +104,7 @@ type TelnetCmtsClient(ip: IPAddress) =
             }
 
             task {
-                do! client.ConnectAsync ip 23
+                do! client.ConnectAsync ip port
                 let! firstResponse = client.ReceiveData timeout
                 return! handleLogin firstResponse
             }

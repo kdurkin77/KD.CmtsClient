@@ -13,9 +13,9 @@
     <PackageProjectUrl>https://github.com/kdurkin77/KD.CmtsClient</PackageProjectUrl>
     <PackageTags>Telnet;Cmts;</PackageTags>
     <PackageReleaseNotes>
-      Added argument validation - ShowCableModem takes in an optional arg that will be used if it's not a null, empty, or whitespace string
+      Added ability to use a different port
     </PackageReleaseNotes>
-    <Version>10.0.1</Version>
+    <Version>10.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
